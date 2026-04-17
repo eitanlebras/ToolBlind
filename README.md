@@ -1,11 +1,58 @@
 # ToolBlind: Measuring AI Agent Reasoning Under Tool Absence with Trajectory Commitment
 
-ToolBlind is a benchmark for evaluating whether AI agents can reason correctly when a required tool becomes unavailable mid-trajectory. Unlike existing tool-use benchmarks that test whether agents can *use* tools, ToolBlind tests whether agents can recognize tool *absence* and respond appropriately — by substituting, decomposing, or halting — rather than confabulating a path forward. The key independent variable is *trajectory commitment*: how many steps has the agent already completed before encountering the gap? Our hypothesis, supported by preliminary results, is that deeper prior commitment increases confabulation rates.
+ToolBlind is a **REST API and benchmark** for evaluating whether AI agents can reason correctly when a required tool becomes unavailable mid-trajectory. It exposes a programmable interface for browsing 500 benchmark tasks, running them against stub or live agents, and computing evaluation metrics — all via HTTP endpoints.
 
-## Installation
+## API
+
+**Base URL:** Deploy and call directly. No API keys required for the test API.
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/` | API overview and version |
+| `GET` | `/stats` | Dataset statistics (500 tasks, 5 domains, 3 tiers) |
+| `GET` | `/tasks` | List/filter tasks by tier, domain, outcome |
+| `GET` | `/tasks/{task_id}` | Full task detail with tools and steps |
+| `GET` | `/run/{task_id}` | Run a single task with a stub agent |
+| `POST` | `/run/batch` | Run N tasks and get aggregate metrics |
+
+**Interactive docs:** `GET /docs` (Swagger UI) or `GET /redoc` (ReDoc)
+
+**OpenAPI spec:** [`openapi.json`](openapi.json) included in the repo.
+
+### Run locally
 
 ```bash
-git clone https://github.com/yourrepo/toolblind.git
+pip install -e .
+uvicorn api:app --reload
+# Open http://localhost:8000/docs
+```
+
+### Example requests
+
+```bash
+# Get dataset stats
+curl http://localhost:8000/stats
+
+# List Tier 1 web tasks
+curl "http://localhost:8000/tasks?tier=1&domain=web&limit=5"
+
+# Run a task with the "smart" strategy
+curl http://localhost:8000/run/tb_t1_web_0000?strategy=smart
+
+# Batch run 50 tasks and get ToolBlind Score
+curl -X POST "http://localhost:8000/run/batch?sample=50&strategy=smart"
+```
+
+---
+
+## Benchmark Overview
+
+ToolBlind tests whether agents can recognize tool *absence* and respond appropriately — by substituting, decomposing, or halting — rather than confabulating a path forward. The key independent variable is *trajectory commitment*: how many steps has the agent already completed before encountering the gap?
+
+## Installation (full benchmark)
+
+```bash
+git clone https://github.com/eitanlebras/ToolBlind.git
 cd toolblind
 pip install -e ".[dev]"
 cp .env.example .env

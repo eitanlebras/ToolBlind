@@ -1,0 +1,744 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "ToolBlind Test API",
+    "description": "Explore the ToolBlind benchmark \u2014 500 tasks testing AI agent reasoning under tool absence with trajectory commitment. No API keys required. Uses deterministic stub agents for demonstration.",
+    "version": "2.0.0"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "tags": [
+          "info"
+        ],
+        "summary": "Root",
+        "description": "API overview.",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stats": {
+      "get": {
+        "tags": [
+          "dataset"
+        ],
+        "summary": "Get Stats",
+        "description": "Get dataset statistics.",
+        "operationId": "get_stats_stats_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatasetStats"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tasks": {
+      "get": {
+        "tags": [
+          "dataset"
+        ],
+        "summary": "List Tasks",
+        "description": "List tasks with optional filtering.",
+        "operationId": "list_tasks_tasks_get",
+        "parameters": [
+          {
+            "name": "tier",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by tier (1, 2, or 3)",
+              "title": "Tier"
+            },
+            "description": "Filter by tier (1, 2, or 3)"
+          },
+          {
+            "name": "domain",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by domain",
+              "title": "Domain"
+            },
+            "description": "Filter by domain"
+          },
+          {
+            "name": "outcome",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by ground truth outcome",
+              "title": "Outcome"
+            },
+            "description": "Filter by ground truth outcome"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Max results",
+              "default": 20,
+              "title": "Limit"
+            },
+            "description": "Max results"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Skip N results",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "Skip N results"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TaskSummary"
+                  },
+                  "title": "Response List Tasks Tasks Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tasks/{task_id}": {
+      "get": {
+        "tags": [
+          "dataset"
+        ],
+        "summary": "Get Task",
+        "description": "Get full details for a specific task.",
+        "operationId": "get_task_tasks__task_id__get",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Task Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/run/{task_id}": {
+      "get": {
+        "tags": [
+          "run"
+        ],
+        "summary": "Run Task",
+        "description": "Run a single task with a stub agent and return the scored result.",
+        "operationId": "run_task_run__task_id__get",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Task Id"
+            }
+          },
+          {
+            "name": "strategy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Agent strategy: smart, always_halt, always_confabulate",
+              "default": "smart",
+              "title": "Strategy"
+            },
+            "description": "Agent strategy: smart, always_halt, always_confabulate"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/run/batch": {
+      "post": {
+        "tags": [
+          "run"
+        ],
+        "summary": "Run Batch",
+        "description": "Run a batch of tasks and return aggregate metrics.",
+        "operationId": "run_batch_run_batch_post",
+        "parameters": [
+          {
+            "name": "strategy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Agent strategy",
+              "default": "smart",
+              "title": "Strategy"
+            },
+            "description": "Agent strategy"
+          },
+          {
+            "name": "tier",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by tier",
+              "title": "Tier"
+            },
+            "description": "Filter by tier"
+          },
+          {
+            "name": "domain",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by domain",
+              "title": "Domain"
+            },
+            "description": "Filter by domain"
+          },
+          {
+            "name": "sample",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "description": "Number of tasks to run",
+              "default": 30,
+              "title": "Sample"
+            },
+            "description": "Number of tasks to run"
+          },
+          {
+            "name": "seed",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "description": "Random seed for sampling",
+              "default": 42,
+              "title": "Seed"
+            },
+            "description": "Random seed for sampling"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BatchResult": {
+        "properties": {
+          "strategy": {
+            "type": "string",
+            "title": "Strategy"
+          },
+          "total_tasks": {
+            "type": "integer",
+            "title": "Total Tasks"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/RunResult"
+            },
+            "type": "array",
+            "title": "Results"
+          },
+          "metrics": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metrics"
+          }
+        },
+        "type": "object",
+        "required": [
+          "strategy",
+          "total_tasks",
+          "results",
+          "metrics"
+        ],
+        "title": "BatchResult",
+        "description": "Result of running a batch of tasks."
+      },
+      "DatasetStats": {
+        "properties": {
+          "total_tasks": {
+            "type": "integer",
+            "title": "Total Tasks"
+          },
+          "tier_distribution": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Tier Distribution"
+          },
+          "domain_distribution": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Domain Distribution"
+          },
+          "outcome_distribution": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Outcome Distribution"
+          },
+          "difficulty_distribution": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Difficulty Distribution"
+          },
+          "avg_steps_per_task": {
+            "type": "number",
+            "title": "Avg Steps Per Task"
+          },
+          "avg_registry_size": {
+            "type": "number",
+            "title": "Avg Registry Size"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_tasks",
+          "tier_distribution",
+          "domain_distribution",
+          "outcome_distribution",
+          "difficulty_distribution",
+          "avg_steps_per_task",
+          "avg_registry_size"
+        ],
+        "title": "DatasetStats",
+        "description": "Dataset statistics."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "RunResult": {
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "title": "Task Id"
+          },
+          "tier": {
+            "type": "integer",
+            "title": "Tier"
+          },
+          "domain": {
+            "type": "string",
+            "title": "Domain"
+          },
+          "strategy": {
+            "type": "string",
+            "title": "Strategy"
+          },
+          "outcome": {
+            "type": "string",
+            "title": "Outcome"
+          },
+          "ground_truth": {
+            "type": "string",
+            "title": "Ground Truth"
+          },
+          "correct": {
+            "type": "boolean",
+            "title": "Correct"
+          },
+          "agent_reasoning": {
+            "type": "string",
+            "title": "Agent Reasoning"
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence"
+          },
+          "functional_reasoning_score": {
+            "type": "integer",
+            "title": "Functional Reasoning Score"
+          },
+          "steps_completed": {
+            "type": "integer",
+            "title": "Steps Completed"
+          },
+          "wall_time_seconds": {
+            "type": "number",
+            "title": "Wall Time Seconds"
+          }
+        },
+        "type": "object",
+        "required": [
+          "task_id",
+          "tier",
+          "domain",
+          "strategy",
+          "outcome",
+          "ground_truth",
+          "correct",
+          "agent_reasoning",
+          "confidence",
+          "functional_reasoning_score",
+          "steps_completed",
+          "wall_time_seconds"
+        ],
+        "title": "RunResult",
+        "description": "Result of running a single task."
+      },
+      "TaskDetail": {
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "title": "Task Id"
+          },
+          "tier": {
+            "type": "integer",
+            "title": "Tier"
+          },
+          "domain": {
+            "type": "string",
+            "title": "Domain"
+          },
+          "goal": {
+            "type": "string",
+            "title": "Goal"
+          },
+          "steps": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Steps"
+          },
+          "gap_step_index": {
+            "type": "integer",
+            "title": "Gap Step Index"
+          },
+          "available_tools": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Available Tools"
+          },
+          "unavailable_tool": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Unavailable Tool"
+          },
+          "ground_truth_outcome": {
+            "type": "string",
+            "title": "Ground Truth Outcome"
+          },
+          "gold_solution": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gold Solution"
+          },
+          "unavailability_reason": {
+            "type": "string",
+            "title": "Unavailability Reason"
+          },
+          "registry_size": {
+            "type": "integer",
+            "title": "Registry Size"
+          },
+          "commitment_depth": {
+            "type": "integer",
+            "title": "Commitment Depth"
+          },
+          "difficulty": {
+            "type": "string",
+            "title": "Difficulty"
+          }
+        },
+        "type": "object",
+        "required": [
+          "task_id",
+          "tier",
+          "domain",
+          "goal",
+          "steps",
+          "gap_step_index",
+          "available_tools",
+          "unavailable_tool",
+          "ground_truth_outcome",
+          "gold_solution",
+          "unavailability_reason",
+          "registry_size",
+          "commitment_depth",
+          "difficulty"
+        ],
+        "title": "TaskDetail",
+        "description": "Full task detail."
+      },
+      "TaskSummary": {
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "title": "Task Id"
+          },
+          "tier": {
+            "type": "integer",
+            "title": "Tier"
+          },
+          "domain": {
+            "type": "string",
+            "title": "Domain"
+          },
+          "goal": {
+            "type": "string",
+            "title": "Goal"
+          },
+          "ground_truth_outcome": {
+            "type": "string",
+            "title": "Ground Truth Outcome"
+          },
+          "commitment_depth": {
+            "type": "integer",
+            "title": "Commitment Depth"
+          },
+          "difficulty": {
+            "type": "string",
+            "title": "Difficulty"
+          },
+          "unavailable_tool": {
+            "type": "string",
+            "title": "Unavailable Tool"
+          },
+          "num_steps": {
+            "type": "integer",
+            "title": "Num Steps"
+          }
+        },
+        "type": "object",
+        "required": [
+          "task_id",
+          "tier",
+          "domain",
+          "goal",
+          "ground_truth_outcome",
+          "commitment_depth",
+          "difficulty",
+          "unavailable_tool",
+          "num_steps"
+        ],
+        "title": "TaskSummary",
+        "description": "Summary of a task for listing."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
