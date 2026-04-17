@@ -1,0 +1,67 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "toolblind"
+version = "1.0.0"
+description = "ToolBlind: Measuring AI Agent Reasoning Under Tool Absence with Trajectory Commitment"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [
+    {name = "ToolBlind Authors"},
+]
+keywords = ["benchmark", "ai-agents", "tool-use", "confabulation", "neurips"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "anthropic>=0.39.0",
+    "openai>=1.50.0",
+    "google-generativeai>=0.8.0",
+    "pytest>=8.0.0",
+    "numpy>=1.26.0",
+    "scipy>=1.12.0",
+    "pandas>=2.2.0",
+    "tqdm>=4.66.0",
+    "python-dotenv>=1.0.0",
+    "diskcache>=5.6.0",
+    "rich>=13.7.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest-cov>=4.1.0",
+    "black>=24.0.0",
+    "ruff>=0.3.0",
+]
+
+[project.scripts]
+toolblind-run = "scripts.run_experiment:main"
+
+[tool.setuptools.packages.find]
+include = ["toolblind*"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--tb=short"
+
+[tool.black]
+line-length = 120
+target-version = ["py310"]
