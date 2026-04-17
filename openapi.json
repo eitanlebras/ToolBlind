@@ -3,7 +3,7 @@
   "info": {
     "title": "ToolBlind Test API",
     "description": "Explore the ToolBlind benchmark \u2014 500 tasks testing AI agent reasoning under tool absence with trajectory commitment. No API keys required. Uses deterministic stub agents for demonstration.",
-    "version": "2.0.0"
+    "version": "3.0.0"
   },
   "paths": {
     "/": {
@@ -14,6 +14,26 @@
         "summary": "Root",
         "description": "API overview.",
         "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "info"
+        ],
+        "summary": "Health",
+        "description": "Health check \u2014 returns status and task count.",
+        "operationId": "health_health_get",
         "responses": {
           "200": {
             "description": "Successful Response",
