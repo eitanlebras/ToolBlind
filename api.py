@@ -179,7 +179,7 @@ app = FastAPI(
         "under tool absence with trajectory commitment. No API keys required. "
         "Uses deterministic stub agents for demonstration."
     ),
-    version="1.0.0",
+    version="2.0.0",
 )
 
 app.add_middleware(
@@ -201,7 +201,7 @@ def root():
     """API overview."""
     return {
         "name": "ToolBlind Test API",
-        "version": "1.0.0",
+        "version": "2.0.0",
         "description": "Benchmark for AI agent reasoning under tool absence",
         "docs": "/docs",
         "endpoints": {
